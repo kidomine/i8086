@@ -9,6 +9,7 @@
  */
 
 #include <stdlib.h>
+#include "i86_bus.h"
 #include "i86_register.h"
 #include "i86_logger.h"
 
@@ -157,154 +158,135 @@ i86_cpu_print_info(i86_cpu_t cpu)
     i86_logger("Status register: 0x.8x\n\n", cpu->sf);
 }
 
-/* APIs used to set values to the CPU registers. */
-/* Some helper APIs. */
-static void
-_i86_cpu_set_reg(i86_register16_t *reg, uint16_t value)
-{
-    reg->reg.reg16 = value;
-}
-
-static void
-_i86_cpu_set_reg_l(i86_register16_t *reg, uint8_t value)
-{
-    reg->reg.reg8.reg_l = value;
-}
-
-static void
-_i86_cpu_set_reg_h(i86_register16_t *reg, uint8_t value)
-{
-    reg->reg.reg8.reg_h = value;
-}
 
 /* APIs to set the value of the main registers. */
 void
 i86_cpu_set_reg_mr_ax(i86_cpu_t cpu, uint16_t value)
 {
-    _i86_cpu_set_reg(&cpu->ax, value);
+    i86_register_set_reg(&cpu->ax, value);
 }
 
 void
 i86_cpu_set_reg_mr_ax_al(i86_cpu_t cpu, uint8_t value)
 {
-    _i86_cpu_set_reg_l(&cpu->ax, value);
+    i86_register_set_reg_l(&cpu->ax, value);
 }
 
 void
 i86_cpu_set_reg_mr_ax_ah(i86_cpu_t cpu, uint8_t value)
 {
-    _i86_cpu_set_reg_h(&cpu->ax, value);
+    i86_register_set_reg_h(&cpu->ax, value);
 }
 
 void
 i86_cpu_set_reg_mr_bx(i86_cpu_t cpu, uint16_t value)
 {
-    _i86_cpu_set_reg(&cpu->bx, value);
+    i86_register_set_reg(&cpu->bx, value);
 }
 
 void
 i86_cpu_set_reg_mr_bx_bl(i86_cpu_t cpu, uint8_t value)
 {
-    _i86_cpu_set_reg_l(&cpu->bx, value);
+    i86_register_set_reg_l(&cpu->bx, value);
 }
 
 void
 i86_cpu_set_reg_mr_bx_bh(i86_cpu_t cpu, uint8_t value)
 {
-    _i86_cpu_set_reg_h(&cpu->bx, value);
+    i86_register_set_reg_h(&cpu->bx, value);
 }
 
 void
 i86_cpu_set_reg_mr_cx(i86_cpu_t cpu, uint16_t value)
 {
-    _i86_cpu_set_reg(&cpu->cx, value);
+    i86_register_set_reg(&cpu->cx, value);
 }
 
 void
 i86_cpu_set_reg_mr_cx_cl(i86_cpu_t cpu, uint8_t value)
 {
-    _i86_cpu_set_reg_l(&cpu->cx, value);
+    i86_register_set_reg_l(&cpu->cx, value);
 }
 
 void
 i86_cpu_set_reg_mr_cx_ch(i86_cpu_t cpu, uint8_t value)
 {
-    _i86_cpu_set_reg_h(&cpu->cx, value);
+    i86_register_set_reg_h(&cpu->cx, value);
 }
 
 void
 i86_cpu_set_reg_mr_dx(i86_cpu_t cpu, uint16_t value)
 {
-    _i86_cpu_set_reg(&cpu->dx, value);
+    i86_register_set_reg(&cpu->dx, value);
 }
 
 void
 i86_cpu_set_reg_mr_dx_dl(i86_cpu_t cpu, uint8_t value)
 {
-    _i86_cpu_set_reg_l(&cpu->dx, value);
+    i86_register_set_reg_l(&cpu->dx, value);
 }
 
 void
 i86_cpu_set_reg_mr_dx_dh(i86_cpu_t cpu, uint8_t value)
 {
-    _i86_cpu_set_reg_h(&cpu->dx, value);
+    i86_register_set_reg_h(&cpu->dx, value);
 }
 
 /* APIs to set the value of the index registers. */
 void
 i86_cpu_set_reg_ir_si(i86_cpu_t cpu, uint16_t value)
 {
-    _i86_cpu_set_reg(&cpu->si, value);
+    i86_register_set_reg(&cpu->si, value);
 }
 
 void
 i86_cpu_set_reg_ir_di(i86_cpu_t cpu, uint16_t value)
 {
-    _i86_cpu_set_reg(&cpu->di, value);
+    i86_register_set_reg(&cpu->di, value);
 }
 
 void
 i86_cpu_set_reg_ir_bp(i86_cpu_t cpu, uint16_t value)
 {
-    _i86_cpu_set_reg(&cpu->bp, value);
+    i86_register_set_reg(&cpu->bp, value);
 }
 
 void
 i86_cpu_set_reg_ir_sp(i86_cpu_t cpu, uint16_t value)
 {
-    _i86_cpu_set_reg(&cpu->sp, value);
+    i86_register_set_reg(&cpu->sp, value);
 }
 
 /* API to set the value of the program counter. */
 void
 i86_cpu_set_reg_pc_ip(i86_cpu_t cpu, uint16_t value)
 {
-    _i86_cpu_set_reg(&cpu->ip, value);
+    i86_register_set_reg(&cpu->ip, value);
 }
 
 /* APIs to set the value of the segment registers. */
 void
 i86_cpu_set_reg_sr_cs(i86_cpu_t cpu, uint16_t value)
 {
-    _i86_cpu_set_reg(&cpu->cs, value);
+    i86_register_set_reg(&cpu->cs, value);
 }
 
 void
 i86_cpu_set_reg_sr_ds(i86_cpu_t cpu, uint16_t value)
 {
-    _i86_cpu_set_reg(&cpu->ds, value);
+    i86_register_set_reg(&cpu->ds, value);
 }
 
 void
 i86_cpu_set_reg_sr_es(i86_cpu_t cpu, uint16_t value)
 {
-    _i86_cpu_set_reg(&cpu->es, value);
+    i86_register_set_reg(&cpu->es, value);
 }
 
 void
 i86_cpu_set_reg_sr_ss(i86_cpu_t cpu, uint16_t value)
 {
-    _i86_cpu_set_reg(&cpu->ss, value);
+    i86_register_set_reg(&cpu->ss, value);
 }
 
 /* APIs to set the flags in the status register. */
@@ -379,154 +361,135 @@ i86_cpu_set_reg_sf_of(i86_cpu_t cpu, uint8_t value)
     _i86_cpu_set_reg_sf(&cpu->sf, I86_SR_OF_OVERFLOW_FLAG);
 }
 
-/* APIs used to get the values of CPU registers. */
-/* Some helper APIs. */
-static uint16_t
-_i86_cpu_get_reg(i86_register16_t *reg)
-{
-    return reg->reg.reg16;
-}
-
-static uint8_t
-_i86_cpu_get_reg_l(i86_register16_t *reg)
-{
-    return reg->reg.reg8.reg_l;
-}
-
-static uint8_t
-_i86_cpu_get_reg_h(i86_register16_t *reg)
-{
-    return reg->reg.reg8.reg_h;
-}
 
 /* APIs to get the value of the main registers. */
 uint16_t
 i86_cpu_get_reg_mr_ax(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg(&cpu->ax);
+    return i86_register_get_reg(&cpu->ax);
 }
 
 uint8_t
 i86_cpu_get_reg_mr_ax_al(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg_l(&cpu->ax);
+    return i86_register_get_reg_l(&cpu->ax);
 }
 
 uint8_t
 i86_cpu_get_reg_mr_ax_ah(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg_h(&cpu->ax);
+    return i86_register_get_reg_h(&cpu->ax);
 }
 
 uint16_t
 i86_cpu_get_reg_mr_bx(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg(&cpu->bx);
+    return i86_register_get_reg(&cpu->bx);
 }
 
 uint8_t
 i86_cpu_get_reg_mr_bx_bl(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg_l(&cpu->bx);
+    return i86_register_get_reg_l(&cpu->bx);
 }
 
 uint8_t
 i86_cpu_get_reg_mr_bx_bh(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg_h(&cpu->bx);
+    return i86_register_get_reg_h(&cpu->bx);
 }
 
 uint16_t
 i86_cpu_get_reg_mr_cx(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg(&cpu->cx);
+    return i86_register_get_reg(&cpu->cx);
 }
 
 uint8_t
 i86_cpu_get_reg_mr_cx_cl(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg_l(&cpu->cx);
+    return i86_register_get_reg_l(&cpu->cx);
 }
 
 uint8_t
 i86_cpu_get_reg_mr_cx_ch(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg_h(&cpu->cx);
+    return i86_register_get_reg_h(&cpu->cx);
 }
 
 uint16_t
 i86_cpu_get_reg_mr_dx(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg(&cpu->dx);
+    return i86_register_get_reg(&cpu->dx);
 }
 
 uint8_t
 i86_cpu_get_reg_mr_dx_dl(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg_l(&cpu->dx);
+    return i86_register_get_reg_l(&cpu->dx);
 }
 
 uint8_t
 i86_cpu_get_reg_mr_dx_dh(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg_h(&cpu->dx);
+    return i86_register_get_reg_h(&cpu->dx);
 }
 
 /* APIs to get the value of the index registers. */
 uint16_t
 i86_cpu_get_reg_ir_si(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg(&cpu->si);
+    return i86_register_get_reg(&cpu->si);
 }
 
 uint16_t
 i86_cpu_get_reg_ir_di(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg(&cpu->di);
+    return i86_register_get_reg(&cpu->di);
 }
 
 uint16_t
 i86_cpu_get_reg_ir_bp(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg(&cpu->bp);
+    return i86_register_get_reg(&cpu->bp);
 }
 
 uint16_t
 i86_cpu_get_reg_ir_sp(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg(&cpu->sp);
+    return i86_register_get_reg(&cpu->sp);
 }
 
 /* API to get the value of the program counter. */
 uint16_t
 i86_cpu_get_reg_pc_ip(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg(&cpu->ip);
+    return i86_register_get_reg(&cpu->ip);
 }
 
 /* APIs to set the value of the segment registers. */
 uint16_t
 i86_cpu_get_reg_sr_cs(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg(&cpu->cs);
+    return i86_register_get_reg(&cpu->cs);
 }
 
 uint16_t
 i86_cpu_get_reg_sr_ds(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg(&cpu->ds);
+    return i86_register_get_reg(&cpu->ds);
 }
 
 uint16_t
 i86_cpu_get_reg_sr_es(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg(&cpu->es);
+    return i86_register_get_reg(&cpu->es);
 }
 
 uint16_t
 i86_cpu_get_reg_sr_ss(i86_cpu_t cpu)
 {
-    return _i86_cpu_get_reg(&cpu->ss);
+    return i86_register_get_reg(&cpu->ss);
 }
 
 /* APIs to get the flags in the status register. */
