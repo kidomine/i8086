@@ -96,52 +96,14 @@ i86_cpu_get_mode(i86_cpu_t cpu)
     return cpu->mode;
 }
 
-
 /* API used to display the current CPU values. */
-
-/* Helper API. */
-static void
-i86_cpu_print_register(void *id, i86_register16_t *reg)
-{
-    char buff[I86_LOG_MSG_BUFF_LEN];
-
-    memset(buff, 0x00, I86_LOG_MSG_BUFF_LEN);
-    snprintf(buff,
-             I86_LOG_MSG_BUFF_LEN,
-             "%s : 0x%.4x (l: 0x%.2, h: 0x%.2)\n",
-             id,
-             reg->reg.reg16,
-             reg->reg.reg8.reg_l,
-             reg->reg.reg8.reg_h
-             );
-
-    i86_logger(buff);
-}
-
 void
 i86_cpu_print_info(i86_cpu_t cpu)
 {
     i86_logger("CPU info for 0x%.8x\n");
     i86_logger("Mode: %d\n\n", cpu->mode);
 
-    i86_logger("Main registers:\n");
-    i86_cpu_print_register("    ax", &cpu->ax);
-    i86_cpu_print_register("    bx", &cpu->bx);
-    i86_cpu_print_register("    cx", &cpu->cx);
-    i86_cpu_print_register("    dx", &cpu->dx);
-
-    i86_logger("Index registers:\n");
-    i86_logger("    si: 0x.8x\n", cpu->si);
-    i86_logger("    di: 0x.8x\n", cpu->di);
-    i86_logger("    bp: 0x.8x\n", cpu->bp);
-    i86_logger("    sp: 0x.8x\n", cpu->sp);
-
-    i86_logger("Segment registers:\n");
-    i86_logger("    cs: 0x.8x\n", cpu->si);
-    i86_logger("    ds: 0x.8x\n", cpu->ds);
-    i86_logger("    es: 0x.8x\n", cpu->es);
-    i86_logger("    ss: 0x.8x\n", cpu->ss);
-
-    i86_logger("Program counter: 0x.8x\n", cpu->ip);
-    i86_logger("Status register: 0x.8x\n\n", cpu->sf);
+    i86_ceu_print_registers(cpu->ceu);
+    i86_alu_print_registers(cpu->alu);
+    i86_bus_print_registers(cpu->bus);
 }

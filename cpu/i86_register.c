@@ -9,9 +9,30 @@
  */
 
 #include "i86_register.h"
+#include "i86_logger.h"
 
 #define REG_HI 1
 #define REG_LO 0
+
+
+/* API used to print the content of a given register. */
+void
+i86_cpu_print_register(void *id, i86_register16_t *reg)
+{
+    char buff[I86_LOG_MSG_BUFF_LEN];
+
+    memset(buff, 0x00, I86_LOG_MSG_BUFF_LEN);
+    snprintf(buff,
+             I86_LOG_MSG_BUFF_LEN,
+             "%s : 0x%.4x (l: 0x%.2, h: 0x%.2)\n",
+             id,
+             reg->reg.reg16,
+             reg->reg.reg8.reg_l,
+             reg->reg.reg8.reg_h
+             );
+
+    i86_logger(buff);
+}
 
 /* APIs used to get the values of CPU registers. */
 static uint8_t

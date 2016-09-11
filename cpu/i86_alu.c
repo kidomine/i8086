@@ -48,6 +48,12 @@ i86_alu_destroy(i86_alu_t *alu)
     }
 }
 
+void
+i86_alu_print_registers(i86_alu_t alu)
+{
+    i86_logger("Status register: 0x.8x\n\n", alu->sf);
+}
+
 
 /* APIs to set the flags in the status register. */
 /* Helper API. Toggles the current value of the given register flag. */

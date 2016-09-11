@@ -12,13 +12,6 @@
 #include "i86_logger.h"
 #include "i86_bus.h"
 
-/* Buses. */
-#if 0
-volatile uint32_t address_bus;    /* 20-bit */
-volatile uint16_t data_bus;       /* 16-bit */
-volatile uint16_t control_bus;    /* 16-bit? */
-#endif
-
 typedef struct _i86_bus_t
 {
     /* program counter */
@@ -61,6 +54,18 @@ i86_bus_destroy(i86_bus_t *bus)
     } else {
         i86_logger("no BUS instance provided!");
     }
+}
+
+void
+i86_bus_print_registers(i86_bus_t bus)
+{
+    i86_logger("Segment registers:\n");
+    i86_logger("    cs: 0x.8x\n", bus->cs);
+    i86_logger("    ds: 0x.8x\n", bus->ds);
+    i86_logger("    es: 0x.8x\n", bus->es);
+    i86_logger("    ss: 0x.8x\n", bus->ss);
+
+    i86_logger("Program counter: 0x.8x\n", bus->ip);
 }
 
 

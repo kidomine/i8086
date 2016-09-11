@@ -56,6 +56,23 @@ i86_ceu_destroy(i86_ceu_t *ceu)
     }
 }
 
+void
+i86_ceu_print_registers(i86_ceu_t ceu)
+{
+    i86_logger("Main registers:\n");
+    i86_cpu_print_register("    ax", ceu->ax);
+    i86_cpu_print_register("    bx", ceu->bx);
+    i86_cpu_print_register("    cx", ceu->cx);
+    i86_cpu_print_register("    dx", ceu->dx);
+
+    i86_logger("Index registers:\n");
+    i86_logger("    si: 0x.8x\n", ceu->si);
+    i86_logger("    di: 0x.8x\n", ceu->di);
+    i86_logger("    bp: 0x.8x\n", ceu->bp);
+    i86_logger("    sp: 0x.8x\n", ceu->sp);
+}
+
+
 /* APIs to set the value of the main registers. */
 void
 i86_cpu_set_reg_mr_ax(i86_cpu_t cpu, uint16_t value)

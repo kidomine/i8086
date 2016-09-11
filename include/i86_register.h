@@ -54,6 +54,11 @@ typedef struct _i86_register16_t
     } reg;
 } i86_register16_t;
 
+
+/* API used to print the content of a given register. */
+extern void
+i86_cpu_print_register(void *id, i86_register16_t *reg);
+
 /* APIs used to get the values of CPU registers. */
 extern uint16_t
 i86_register_get_reg(i86_register16_t *reg);
