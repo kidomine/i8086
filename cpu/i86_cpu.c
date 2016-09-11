@@ -9,31 +9,11 @@
  */
 
 #include <stdlib.h>
-#include "i86_bus.h"
 #include "i86_register.h"
 #include "i86_logger.h"
-
-/* Status register flags. */
-#define I86_SR_OF_OVERFLOW_FLAG        0x0800
-#define I86_SR_DF_DIRECTION_FLAG       0x0400
-#define I86_SR_IF_INTERRUPT_FLAG       0x0200
-#define I86_SR_TF_TRAP_FLAG            0x0100
-#define I86_SR_SF_SIGN_FLAG            0x0080
-#define I86_SR_ZF_ZERO_FLAG            0x0040
-#define I86_SR_AF_AUXILLARY_FLAG       0x0010
-#define I86_SR_PF_PARITY_FLAG          0x0004
-#define I86_SR_CF_CARRY_FLAG           0x0001
-
-/* Shifts for the status register flags. */
-#define I86_SR_OF_OVERFLOW_FLAG_SHIFT  11
-#define I86_SR_DF_DIRECTION_FLAG_SHIFT 10
-#define I86_SR_IF_INTERRUPT_FLAG_SHIFT 9
-#define I86_SR_TF_TRAP_FLAG_SHIFT      8
-#define I86_SR_SF_SIGN_FLAG_SHIFT      7
-#define I86_SR_ZF_ZERO_FLAG_SHIFT      6
-#define I86_SR_AF_AUXILLARY_FLAG_SHIFT 4
-#define I86_SR_PF_PARITY_FLAG_SHIFT    2
-#define I86_SR_CF_CARRY_FLAG_SHIFT     0
+#include "i86_alu.h"
+#include "i86_bus.h"
+#include "i86_ceu.h"
 
 
 /* Definition of a CPU type. */
@@ -41,30 +21,10 @@ typedef struct _i86_cpu_t
 {
     i86_mode_e mode;
 
-    /* main registers */
-    i86_register16_t ax; // primary accumulator
-    i86_register16_t bx; // base, accumulator
-    i86_register16_t cx; // counter, accumulator
-    i86_register16_t dx; // accumulator, other functions
-
-    /* index registers */
-    i86_register16_t si; // source index
-    i86_register16_t di; // destination index
-    i86_register16_t bp; // base pointer
-    i86_register16_t sp; // stack pointer
-
-    /* program counter */
-    i86_register16_t ip; // instruction pointer
-
-    /* segment registers */
-    i86_register16_t cs; // code segment
-    i86_register16_t ds; // data segment
-    i86_register16_t es; // extra segment
-    i86_register16_t ss; // stack segment
-
-    /* status registers */
-    i86_register16_t sf; // status register flags
-} i86_cpu_t;
+    i86_ceu_t *ceu;
+    i86_alu_t *alu;
+    i86_bus_t *bus;
+};
 
 
 /* CPU constructor/destructor */
@@ -74,13 +34,38 @@ i86_cpu_create(void)
     i86_cpu_t cpu = NULL;
 
     cpu = malloc(sizeof(i86_cpu_t));
-    if (cpu == NULL)
+    if (cpu != NULL)
     {
+        memset(cpu, 0x00, sizeof(i86_cpu_t));
+
+        cpu->alu = i86_alu_create();
+        if (cpu->alu != NULL)
+        {
+            cpu->bus = i86_bus_create();
+            if (cpu->bus != NULL)
+            {
+                cpu->ceu = i86_ceu_create();
+                if (cpu->ceu != NULL)
+                {
+                    cpu->mode = i86_mode_real;
+                } else {
+                    i86_logger("failed to create a CEU instance!");
+                    i86_bus_destroy(&cpu->bus);
+                    i86_alu_destroy(&cpu->alu);
+                    free(cpu);
+                }
+            } else {
+                i86_logger("failed to create a BUS instance!");
+                i86_alu_destroy(&cpu->alu);
+                free(cpu);
+            }
+        } else {
+            i86_logger("failed to create an ALU instance!");
+            free(cpu);
+        }
+    } else {
         i86_logger("failed to create a CPU instance!");
     }
-
-    memset(cpu, 0x00, sizeof(i86_cpu_t));
-    cpu->mode = i86_mode_real;
 
     return cpu;
 }
@@ -92,6 +77,9 @@ i86_cpu_destroy(i86_cpu_t cpu)
     {
         i86_logger("no CPU instance specified!");
     } else {
+        i86_alu_destroy(&cpu->alu);
+        i86_bus_destroy(&cpu->bus);
+        i86_ceu_destroy(&cpu->bus);
         free(cpu);
     }
 }
@@ -157,419 +145,3 @@ i86_cpu_print_info(i86_cpu_t cpu)
     i86_logger("Program counter: 0x.8x\n", cpu->ip);
     i86_logger("Status register: 0x.8x\n\n", cpu->sf);
 }
-
-
-/* APIs to set the value of the main registers. */
-void
-i86_cpu_set_reg_mr_ax(i86_cpu_t cpu, uint16_t value)
-{
-    i86_register_set_reg(&cpu->ax, value);
-}
-
-void
-i86_cpu_set_reg_mr_ax_al(i86_cpu_t cpu, uint8_t value)
-{
-    i86_register_set_reg_l(&cpu->ax, value);
-}
-
-void
-i86_cpu_set_reg_mr_ax_ah(i86_cpu_t cpu, uint8_t value)
-{
-    i86_register_set_reg_h(&cpu->ax, value);
-}
-
-void
-i86_cpu_set_reg_mr_bx(i86_cpu_t cpu, uint16_t value)
-{
-    i86_register_set_reg(&cpu->bx, value);
-}
-
-void
-i86_cpu_set_reg_mr_bx_bl(i86_cpu_t cpu, uint8_t value)
-{
-    i86_register_set_reg_l(&cpu->bx, value);
-}
-
-void
-i86_cpu_set_reg_mr_bx_bh(i86_cpu_t cpu, uint8_t value)
-{
-    i86_register_set_reg_h(&cpu->bx, value);
-}
-
-void
-i86_cpu_set_reg_mr_cx(i86_cpu_t cpu, uint16_t value)
-{
-    i86_register_set_reg(&cpu->cx, value);
-}
-
-void
-i86_cpu_set_reg_mr_cx_cl(i86_cpu_t cpu, uint8_t value)
-{
-    i86_register_set_reg_l(&cpu->cx, value);
-}
-
-void
-i86_cpu_set_reg_mr_cx_ch(i86_cpu_t cpu, uint8_t value)
-{
-    i86_register_set_reg_h(&cpu->cx, value);
-}
-
-void
-i86_cpu_set_reg_mr_dx(i86_cpu_t cpu, uint16_t value)
-{
-    i86_register_set_reg(&cpu->dx, value);
-}
-
-void
-i86_cpu_set_reg_mr_dx_dl(i86_cpu_t cpu, uint8_t value)
-{
-    i86_register_set_reg_l(&cpu->dx, value);
-}
-
-void
-i86_cpu_set_reg_mr_dx_dh(i86_cpu_t cpu, uint8_t value)
-{
-    i86_register_set_reg_h(&cpu->dx, value);
-}
-
-/* APIs to set the value of the index registers. */
-void
-i86_cpu_set_reg_ir_si(i86_cpu_t cpu, uint16_t value)
-{
-    i86_register_set_reg(&cpu->si, value);
-}
-
-void
-i86_cpu_set_reg_ir_di(i86_cpu_t cpu, uint16_t value)
-{
-    i86_register_set_reg(&cpu->di, value);
-}
-
-void
-i86_cpu_set_reg_ir_bp(i86_cpu_t cpu, uint16_t value)
-{
-    i86_register_set_reg(&cpu->bp, value);
-}
-
-void
-i86_cpu_set_reg_ir_sp(i86_cpu_t cpu, uint16_t value)
-{
-    i86_register_set_reg(&cpu->sp, value);
-}
-
-/* API to set the value of the program counter. */
-void
-i86_cpu_set_reg_pc_ip(i86_cpu_t cpu, uint16_t value)
-{
-    i86_register_set_reg(&cpu->ip, value);
-}
-
-/* APIs to set the value of the segment registers. */
-void
-i86_cpu_set_reg_sr_cs(i86_cpu_t cpu, uint16_t value)
-{
-    i86_register_set_reg(&cpu->cs, value);
-}
-
-void
-i86_cpu_set_reg_sr_ds(i86_cpu_t cpu, uint16_t value)
-{
-    i86_register_set_reg(&cpu->ds, value);
-}
-
-void
-i86_cpu_set_reg_sr_es(i86_cpu_t cpu, uint16_t value)
-{
-    i86_register_set_reg(&cpu->es, value);
-}
-
-void
-i86_cpu_set_reg_sr_ss(i86_cpu_t cpu, uint16_t value)
-{
-    i86_register_set_reg(&cpu->ss, value);
-}
-
-/* APIs to set the flags in the status register. */
-
-/* Helper API. Toggles the current value of the given register flag. */
-static void
-_i86_cpu_set_reg_sf(i86_register16_t reg, uint16_t flag)
-{
-    uint16_t temp = reg->reg.reg16;
-
-    if(temp & flag)
-    {
-        temp &= (~flag);
-    } else {
-        temp |= flag;
-    }
-
-    reg->reg.reg16 = temp;
-}
-
-void
-i86_cpu_set_reg_sf_cf(i86_cpu_t cpu, uint8_t value)
-{
-    _i86_cpu_set_reg_sf(&cpu->sf, I86_SR_CF_CARRY_FLAG);
-}
-
-void
-i86_cpu_set_reg_sf_pf(i86_cpu_t cpu, uint8_t value)
-{
-    _i86_cpu_set_reg_sf(&cpu->sf, I86_SR_PF_PARITY_FLAG);
-}
-
-void
-i86_cpu_set_reg_sf_af(i86_cpu_t cpu, uint8_t value)
-{
-    _i86_cpu_set_reg_sf(&cpu->sf, I86_SR_AF_AUXILLARY_FLAG);
-}
-
-void
-i86_cpu_set_reg_sf_zf(i86_cpu_t cpu, uint8_t value)
-{
-    _i86_cpu_set_reg_sf(&cpu->sf, I86_SR_ZF_ZERO_FLAG);
-}
-
-void
-i86_cpu_set_reg_sf_sf(i86_cpu_t cpu, uint8_t value)
-{
-    _i86_cpu_set_reg_sf(&cpu->sf, I86_SR_SF_SIGN_FLAG);
-}
-
-void
-i86_cpu_set_reg_sf_tf(i86_cpu_t cpu, uint8_t value)
-{
-    _i86_cpu_set_reg_sf(&cpu->sf, I86_SR_TF_TRAP_FLAG);
-}
-
-void
-i86_cpu_set_reg_sf_if(i86_cpu_t cpu, uint8_t value)
-{
-    _i86_cpu_set_reg_sf(&cpu->sf, I86_SR_IF_INTERRUPT_FLAG);
-}
-
-void
-i86_cpu_set_reg_sf_df(i86_cpu_t cpu, uint8_t value)
-{
-    _i86_cpu_set_reg_sf(&cpu->sf, I86_SR_DF_DIRECTION_FLAG);
-}
-
-void
-i86_cpu_set_reg_sf_of(i86_cpu_t cpu, uint8_t value)
-{
-    _i86_cpu_set_reg_sf(&cpu->sf, I86_SR_OF_OVERFLOW_FLAG);
-}
-
-
-/* APIs to get the value of the main registers. */
-uint16_t
-i86_cpu_get_reg_mr_ax(i86_cpu_t cpu)
-{
-    return i86_register_get_reg(&cpu->ax);
-}
-
-uint8_t
-i86_cpu_get_reg_mr_ax_al(i86_cpu_t cpu)
-{
-    return i86_register_get_reg_l(&cpu->ax);
-}
-
-uint8_t
-i86_cpu_get_reg_mr_ax_ah(i86_cpu_t cpu)
-{
-    return i86_register_get_reg_h(&cpu->ax);
-}
-
-uint16_t
-i86_cpu_get_reg_mr_bx(i86_cpu_t cpu)
-{
-    return i86_register_get_reg(&cpu->bx);
-}
-
-uint8_t
-i86_cpu_get_reg_mr_bx_bl(i86_cpu_t cpu)
-{
-    return i86_register_get_reg_l(&cpu->bx);
-}
-
-uint8_t
-i86_cpu_get_reg_mr_bx_bh(i86_cpu_t cpu)
-{
-    return i86_register_get_reg_h(&cpu->bx);
-}
-
-uint16_t
-i86_cpu_get_reg_mr_cx(i86_cpu_t cpu)
-{
-    return i86_register_get_reg(&cpu->cx);
-}
-
-uint8_t
-i86_cpu_get_reg_mr_cx_cl(i86_cpu_t cpu)
-{
-    return i86_register_get_reg_l(&cpu->cx);
-}
-
-uint8_t
-i86_cpu_get_reg_mr_cx_ch(i86_cpu_t cpu)
-{
-    return i86_register_get_reg_h(&cpu->cx);
-}
-
-uint16_t
-i86_cpu_get_reg_mr_dx(i86_cpu_t cpu)
-{
-    return i86_register_get_reg(&cpu->dx);
-}
-
-uint8_t
-i86_cpu_get_reg_mr_dx_dl(i86_cpu_t cpu)
-{
-    return i86_register_get_reg_l(&cpu->dx);
-}
-
-uint8_t
-i86_cpu_get_reg_mr_dx_dh(i86_cpu_t cpu)
-{
-    return i86_register_get_reg_h(&cpu->dx);
-}
-
-/* APIs to get the value of the index registers. */
-uint16_t
-i86_cpu_get_reg_ir_si(i86_cpu_t cpu)
-{
-    return i86_register_get_reg(&cpu->si);
-}
-
-uint16_t
-i86_cpu_get_reg_ir_di(i86_cpu_t cpu)
-{
-    return i86_register_get_reg(&cpu->di);
-}
-
-uint16_t
-i86_cpu_get_reg_ir_bp(i86_cpu_t cpu)
-{
-    return i86_register_get_reg(&cpu->bp);
-}
-
-uint16_t
-i86_cpu_get_reg_ir_sp(i86_cpu_t cpu)
-{
-    return i86_register_get_reg(&cpu->sp);
-}
-
-/* API to get the value of the program counter. */
-uint16_t
-i86_cpu_get_reg_pc_ip(i86_cpu_t cpu)
-{
-    return i86_register_get_reg(&cpu->ip);
-}
-
-/* APIs to set the value of the segment registers. */
-uint16_t
-i86_cpu_get_reg_sr_cs(i86_cpu_t cpu)
-{
-    return i86_register_get_reg(&cpu->cs);
-}
-
-uint16_t
-i86_cpu_get_reg_sr_ds(i86_cpu_t cpu)
-{
-    return i86_register_get_reg(&cpu->ds);
-}
-
-uint16_t
-i86_cpu_get_reg_sr_es(i86_cpu_t cpu)
-{
-    return i86_register_get_reg(&cpu->es);
-}
-
-uint16_t
-i86_cpu_get_reg_sr_ss(i86_cpu_t cpu)
-{
-    return i86_register_get_reg(&cpu->ss);
-}
-
-/* APIs to get the flags in the status register. */
-
-/* Helper API. Toggles the current value of the given register flag. */
-static uint8_t
-_i86_cpu_get_reg_sf(i86_register16_t reg, uint16_t flag, uint16_t shift)
-{
-    return (reg->reg.reg16 & flag) >> shift;
-}
-
-uint8_t
-i86_cpu_get_reg_sf_cf(i86_cpu_t cpu)
-{
-    return _i86_cpu_get_reg_sf(&cpu->sf,
-                               I86_SR_CF_CARRY_FLAG,
-                               I86_SR_CF_CARRY_FLAG_SHIFT);
-}
-
-uint8_t
-i86_cpu_get_reg_sf_pf(i86_cpu_t cpu)
-{
-    return _i86_cpu_get_reg_sf(&cpu->sf,
-                               I86_SR_PF_PARITY_FLAG,
-                               I86_SR_PF_PARITY_FLAG_SHIFT);
-}
-
-uint8_t
-i86_cpu_get_reg_sf_af(i86_cpu_t cpu)
-{
-    return _i86_cpu_get_reg_sf(&cpu->sf,
-                               I86_SR_AF_AUXILLARY_FLAG,
-                               I86_SR_AF_AUXILLARY_FLAG_SHIFT);
-}
-
-uint8_t
-i86_cpu_get_reg_sf_zf(i86_cpu_t cpu)
-{
-    return _i86_cpu_get_reg_sf(&cpu->sf,
-                               I86_SR_ZF_ZERO_FLAG,
-                               I86_SR_ZF_ZERO_FLAG_SHIFT);
-}
-
-uint8_t
-i86_cpu_get_reg_sf_sf(i86_cpu_t cpu)
-{
-    return _i86_cpu_get_reg_sf(&cpu->sf,
-                               I86_SR_SF_SIGN_FLAG,
-                               I86_SR_SF_SIGN_FLAG_SHIFT);
-}
-
-uint8_t
-i86_cpu_get_reg_sf_tf(i86_cpu_t cpu)
-{
-    return _i86_cpu_get_reg_sf(&cpu->sf,
-                               I86_SR_TF_TRAP_FLAG,
-                               I86_SR_TF_TRAP_FLAG_SHIFT);
-}
-
-uint8_t
-i86_cpu_get_reg_sf_if(i86_cpu_t cpu)
-{
-    return _i86_cpu_get_reg_sf(&cpu->sf,
-                               I86_SR_IF_INTERRUPT_FLAG,
-                               I86_SR_IF_INTERRUPT_FLAG_SHIFT);
-}
-
-uint8_t
-i86_cpu_get_reg_sf_df(i86_cpu_t cpu)
-{
-    return _i86_cpu_get_reg_sf(&cpu->sf,
-                               I86_SR_DF_DIRECTION_FLAG,
-                               I86_SR_DF_DIRECTION_FLAG_SHIFT);
-}
-
-uint8_t
-i86_cpu_get_reg_sf_of(i86_cpu_t cpu)
-{
-    return _i86_cpu_get_reg_sf(&cpu->sf,
-                               I86_SR_OF_OVERFLOW_FLAG,
-                               I86_SR_OF_OVERFLOW_FLAG_SHIFT);
-}
-
