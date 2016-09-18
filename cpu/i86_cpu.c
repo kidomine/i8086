@@ -9,21 +9,18 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include "i86_register.h"
-#include "i86_logger.h"
-#include "i86_alu.h"
-#include "i86_bus.h"
-#include "i86_ceu.h"
-
+#include "i86_cpu.h"
 
 /* Definition of a CPU type. */
 typedef struct _i86_cpu_t
 {
     i86_mode_e mode;
 
-    i86_ceu_t *ceu;
-    i86_alu_t *alu;
-    i86_bus_t *bus;
+    i86_ceu_t ceu;
+    i86_alu_t alu;
+    i86_bus_t bus;
 };
 
 
@@ -36,7 +33,7 @@ i86_cpu_create(void)
     cpu = malloc(sizeof(i86_cpu_t));
     if (cpu != NULL)
     {
-        memset(cpu, 0x00, sizeof(i86_cpu_t));
+        memset(cpu, 0x00, sizeof(struct _i86_cpu_t));
 
         cpu->alu = i86_alu_create();
         if (cpu->alu != NULL)
@@ -79,9 +76,54 @@ i86_cpu_destroy(i86_cpu_t cpu)
     } else {
         i86_alu_destroy(&cpu->alu);
         i86_bus_destroy(&cpu->bus);
-        i86_ceu_destroy(&cpu->bus);
+        i86_ceu_destroy(&cpu->ceu);
         free(cpu);
     }
+}
+
+i86_alu_t
+i86_cpu_get_alu(i86_cpu_t cpu)
+{
+    i86_alu_t alu = NULL;
+
+    if (cpu == NULL)
+    {
+        i86_logger("no CPU instance specified!");
+    } else {
+        alu = cpu->alu;
+    }
+
+    return alu;
+}
+
+i86_bus_t
+i86_cpu_get_bus(i86_cpu_t cpu)
+{
+    i86_bus_t bus = NULL;
+
+    if (cpu == NULL)
+    {
+        i86_logger("no CPU instance specified!");
+    } else {
+        bus = cpu->bus;
+    }
+
+    return bus;
+}
+
+i86_ceu_t
+i86_cpu_get_ceu(i86_cpu_t cpu)
+{
+    i86_ceu_t ceu = NULL;
+
+    if (cpu == NULL)
+    {
+        i86_logger("no CPU instance specified!");
+    } else {
+        ceu = cpu->ceu;
+    }
+
+    return ceu;
 }
 
 void

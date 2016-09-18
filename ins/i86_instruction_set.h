@@ -12,7 +12,9 @@
 #define I86_INSTRUCTION_SET_H_
 
 #include <stdlib.h>
+
 #include "i86_cpu.h"
+#include "i86_operand.h"
 
 typedef void
         i86_iset_fn(i86_cpu_t cpu, uint32_t ope_count, void *ope[]);

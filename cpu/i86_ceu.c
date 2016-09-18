@@ -60,10 +60,10 @@ void
 i86_ceu_print_registers(i86_ceu_t ceu)
 {
     i86_logger("Main registers:\n");
-    i86_cpu_print_register("    ax", ceu->ax);
-    i86_cpu_print_register("    bx", ceu->bx);
-    i86_cpu_print_register("    cx", ceu->cx);
-    i86_cpu_print_register("    dx", ceu->dx);
+    i86_register_print_register("    ax", &ceu->ax);
+    i86_register_print_register("    bx", &ceu->bx);
+    i86_register_print_register("    cx", &ceu->cx);
+    i86_register_print_register("    dx", &ceu->dx);
 
     i86_logger("Index registers:\n");
     i86_logger("    si: 0x.8x\n", ceu->si);
@@ -75,196 +75,196 @@ i86_ceu_print_registers(i86_ceu_t ceu)
 
 /* APIs to set the value of the main registers. */
 void
-i86_cpu_set_reg_mr_ax(i86_cpu_t cpu, uint16_t value)
+i86_ceu_set_reg_mr_ax(i86_ceu_t ceu, uint16_t value)
 {
-    i86_register_set_reg(&cpu->ceu->ax, value);
+    i86_register_set_reg(&ceu->ax, value);
 }
 
 void
-i86_cpu_set_reg_mr_ax_al(i86_cpu_t cpu, uint8_t value)
+i86_ceu_set_reg_mr_ax_al(i86_ceu_t ceu, uint8_t value)
 {
-    i86_register_set_reg_l(&cpu->ceu->ax, value);
+    i86_register_set_reg_l(&ceu->ax, value);
 }
 
 void
-i86_cpu_set_reg_mr_ax_ah(i86_cpu_t cpu, uint8_t value)
+i86_ceu_set_reg_mr_ax_ah(i86_ceu_t ceu, uint8_t value)
 {
-    i86_register_set_reg_h(&cpu->ceu->ax, value);
+    i86_register_set_reg_h(&ceu->ax, value);
 }
 
 void
-i86_cpu_set_reg_mr_bx(i86_cpu_t cpu, uint16_t value)
+i86_ceu_set_reg_mr_bx(i86_ceu_t ceu, uint16_t value)
 {
-    i86_register_set_reg(&cpu->ceu->bx, value);
+    i86_register_set_reg(&ceu->bx, value);
 }
 
 void
-i86_cpu_set_reg_mr_bx_bl(i86_cpu_t cpu, uint8_t value)
+i86_ceu_set_reg_mr_bx_bl(i86_ceu_t ceu, uint8_t value)
 {
-    i86_register_set_reg_l(&cpu->ceu->bx, value);
+    i86_register_set_reg_l(&ceu->bx, value);
 }
 
 void
-i86_cpu_set_reg_mr_bx_bh(i86_cpu_t cpu, uint8_t value)
+i86_ceu_set_reg_mr_bx_bh(i86_ceu_t ceu, uint8_t value)
 {
-    i86_register_set_reg_h(&cpu->ceu->bx, value);
+    i86_register_set_reg_h(&ceu->bx, value);
 }
 
 void
-i86_cpu_set_reg_mr_cx(i86_cpu_t cpu, uint16_t value)
+i86_ceu_set_reg_mr_cx(i86_ceu_t ceu, uint16_t value)
 {
-    i86_register_set_reg(&cpu->ceu->cx, value);
+    i86_register_set_reg(&ceu->cx, value);
 }
 
 void
-i86_cpu_set_reg_mr_cx_cl(i86_cpu_t cpu, uint8_t value)
+i86_ceu_set_reg_mr_cx_cl(i86_ceu_t ceu, uint8_t value)
 {
-    i86_register_set_reg_l(&cpu->ceu->cx, value);
+    i86_register_set_reg_l(&ceu->cx, value);
 }
 
 void
-i86_cpu_set_reg_mr_cx_ch(i86_cpu_t cpu, uint8_t value)
+i86_ceu_set_reg_mr_cx_ch(i86_ceu_t ceu, uint8_t value)
 {
-    i86_register_set_reg_h(&cpu->ceu->cx, value);
+    i86_register_set_reg_h(&ceu->cx, value);
 }
 
 void
-i86_cpu_set_reg_mr_dx(i86_cpu_t cpu, uint16_t value)
+i86_ceu_set_reg_mr_dx(i86_ceu_t ceu, uint16_t value)
 {
-    i86_register_set_reg(&cpu->ceu->dx, value);
+    i86_register_set_reg(&ceu->dx, value);
 }
 
 void
-i86_cpu_set_reg_mr_dx_dl(i86_cpu_t cpu, uint8_t value)
+i86_ceu_set_reg_mr_dx_dl(i86_ceu_t ceu, uint8_t value)
 {
-    i86_register_set_reg_l(&cpu->ceu->dx, value);
+    i86_register_set_reg_l(&ceu->dx, value);
 }
 
 void
-i86_cpu_set_reg_mr_dx_dh(i86_cpu_t cpu, uint8_t value)
+i86_ceu_set_reg_mr_dx_dh(i86_ceu_t ceu, uint8_t value)
 {
-    i86_register_set_reg_h(&cpu->ceu->dx, value);
+    i86_register_set_reg_h(&ceu->dx, value);
 }
 
 /* APIs to set the value of the index registers. */
 void
-i86_cpu_set_reg_ir_si(i86_cpu_t cpu, uint16_t value)
+i86_ceu_set_reg_ir_si(i86_ceu_t ceu, uint16_t value)
 {
-    i86_register_set_reg(&cpu->ceu->si, value);
+    i86_register_set_reg(&ceu->si, value);
 }
 
 void
-i86_cpu_set_reg_ir_di(i86_cpu_t cpu, uint16_t value)
+i86_ceu_set_reg_ir_di(i86_ceu_t ceu, uint16_t value)
 {
-    i86_register_set_reg(&cpu->ceu->di, value);
+    i86_register_set_reg(&ceu->di, value);
 }
 
 void
-i86_cpu_set_reg_ir_bp(i86_cpu_t cpu, uint16_t value)
+i86_ceu_set_reg_ir_bp(i86_ceu_t ceu, uint16_t value)
 {
-    i86_register_set_reg(&cpu->ceu->bp, value);
+    i86_register_set_reg(&ceu->bp, value);
 }
 
 void
-i86_cpu_set_reg_ir_sp(i86_cpu_t cpu, uint16_t value)
+i86_ceu_set_reg_ir_sp(i86_ceu_t ceu, uint16_t value)
 {
-    i86_register_set_reg(&cpu->ceu->sp, value);
+    i86_register_set_reg(&ceu->sp, value);
 }
 
 /* APIs to get the value of the main registers. */
 uint16_t
-i86_cpu_get_reg_mr_ax(i86_cpu_t cpu)
+i86_ceu_get_reg_mr_ax(i86_ceu_t ceu)
 {
-    return i86_register_get_reg(&cpu->ceu->ax);
+    return i86_register_get_reg(&ceu->ax);
 }
 
 uint8_t
-i86_cpu_get_reg_mr_ax_al(i86_cpu_t cpu)
+i86_ceu_get_reg_mr_ax_al(i86_ceu_t ceu)
 {
-    return i86_register_get_reg_l(&cpu->ceu->ax);
+    return i86_register_get_reg_l(&ceu->ax);
 }
 
 uint8_t
-i86_cpu_get_reg_mr_ax_ah(i86_cpu_t cpu)
+i86_ceu_get_reg_mr_ax_ah(i86_ceu_t ceu)
 {
-    return i86_register_get_reg_h(&cpu->ceu->ax);
+    return i86_register_get_reg_h(&ceu->ax);
 }
 
 uint16_t
-i86_cpu_get_reg_mr_bx(i86_cpu_t cpu)
+i86_ceu_get_reg_mr_bx(i86_ceu_t ceu)
 {
-    return i86_register_get_reg(&cpu->ceu->bx);
+    return i86_register_get_reg(&ceu->bx);
 }
 
 uint8_t
-i86_cpu_get_reg_mr_bx_bl(i86_cpu_t cpu)
+i86_ceu_get_reg_mr_bx_bl(i86_ceu_t ceu)
 {
-    return i86_register_get_reg_l(&cpu->ceu->bx);
+    return i86_register_get_reg_l(&ceu->bx);
 }
 
 uint8_t
-i86_cpu_get_reg_mr_bx_bh(i86_cpu_t cpu)
+i86_ceu_get_reg_mr_bx_bh(i86_ceu_t ceu)
 {
-    return i86_register_get_reg_h(&cpu->ceu->bx);
+    return i86_register_get_reg_h(&ceu->bx);
 }
 
 uint16_t
-i86_cpu_get_reg_mr_cx(i86_cpu_t cpu)
+i86_ceu_get_reg_mr_cx(i86_ceu_t ceu)
 {
-    return i86_register_get_reg(&cpu->ceu->cx);
+    return i86_register_get_reg(&ceu->cx);
 }
 
 uint8_t
-i86_cpu_get_reg_mr_cx_cl(i86_cpu_t cpu)
+i86_ceu_get_reg_mr_cx_cl(i86_ceu_t ceu)
 {
-    return i86_register_get_reg_l(&cpu->ceu->cx);
+    return i86_register_get_reg_l(&ceu->cx);
 }
 
 uint8_t
-i86_cpu_get_reg_mr_cx_ch(i86_cpu_t cpu)
+i86_ceu_get_reg_mr_cx_ch(i86_ceu_t ceu)
 {
-    return i86_register_get_reg_h(&cpu->ceu->cx);
+    return i86_register_get_reg_h(&ceu->cx);
 }
 
 uint16_t
-i86_cpu_get_reg_mr_dx(i86_cpu_t cpu)
+i86_ceu_get_reg_mr_dx(i86_ceu_t ceu)
 {
-    return i86_register_get_reg(&cpu->ceu->dx);
+    return i86_register_get_reg(&ceu->dx);
 }
 
 uint8_t
-i86_cpu_get_reg_mr_dx_dl(i86_cpu_t cpu)
+i86_ceu_get_reg_mr_dx_dl(i86_ceu_t ceu)
 {
-    return i86_register_get_reg_l(&cpu->ceu->dx);
+    return i86_register_get_reg_l(&ceu->dx);
 }
 
 uint8_t
-i86_cpu_get_reg_mr_dx_dh(i86_cpu_t cpu)
+i86_ceu_get_reg_mr_dx_dh(i86_ceu_t ceu)
 {
-    return i86_register_get_reg_h(&cpu->ceu->dx);
+    return i86_register_get_reg_h(&ceu->dx);
 }
 
 /* APIs to get the value of the index registers. */
 uint16_t
-i86_cpu_get_reg_ir_si(i86_cpu_t cpu)
+i86_ceu_get_reg_ir_si(i86_ceu_t ceu)
 {
-    return i86_register_get_reg(&cpu->ceu->si);
+    return i86_register_get_reg(&ceu->si);
 }
 
 uint16_t
-i86_cpu_get_reg_ir_di(i86_cpu_t cpu)
+i86_ceu_get_reg_ir_di(i86_ceu_t ceu)
 {
-    return i86_register_get_reg(&cpu->ceu->di);
+    return i86_register_get_reg(&ceu->di);
 }
 
 uint16_t
-i86_cpu_get_reg_ir_bp(i86_cpu_t cpu)
+i86_ceu_get_reg_ir_bp(i86_ceu_t ceu)
 {
-    return i86_register_get_reg(&cpu->ceu->bp);
+    return i86_register_get_reg(&ceu->bp);
 }
 
 uint16_t
-i86_cpu_get_reg_ir_sp(i86_cpu_t cpu)
+i86_ceu_get_reg_ir_sp(i86_ceu_t ceu)
 {
-    return i86_register_get_reg(&cpu->ceu->sp);
+    return i86_register_get_reg(&ceu->sp);
 }

@@ -71,64 +71,64 @@ i86_bus_print_registers(i86_bus_t bus)
 
 /* API to set the value of the program counter. */
 void
-i86_cpu_set_reg_pc_ip(i86_cpu_t cpu, uint16_t value)
+i86_bus_set_reg_pc_ip(i86_bus_t bus, uint16_t value)
 {
-    i86_register_set_reg(&cpu->bus->ip, value);
+    i86_register_set_reg(&bus->ip, value);
 }
 
 /* APIs to set the value of the segment registers. */
 void
-i86_cpu_set_reg_sr_cs(i86_cpu_t cpu, uint16_t value)
+i86_bus_set_reg_sr_cs(i86_bus_t bus, uint16_t value)
 {
-    i86_register_set_reg(&cpu->bus->cs, value);
+    i86_register_set_reg(&bus->cs, value);
 }
 
 void
-i86_cpu_set_reg_sr_ds(i86_cpu_t cpu, uint16_t value)
+i86_bus_set_reg_sr_ds(i86_bus_t bus, uint16_t value)
 {
-    i86_register_set_reg(&cpu->bus->ds, value);
+    i86_register_set_reg(&bus->ds, value);
 }
 
 void
-i86_cpu_set_reg_sr_es(i86_cpu_t cpu, uint16_t value)
+i86_bus_set_reg_sr_es(i86_bus_t bus, uint16_t value)
 {
-    i86_register_set_reg(&cpu->bus->es, value);
+    i86_register_set_reg(&bus->es, value);
 }
 
 void
-i86_cpu_set_reg_sr_ss(i86_cpu_t cpu, uint16_t value)
+i86_bus_set_reg_sr_ss(i86_bus_t bus, uint16_t value)
 {
-    i86_register_set_reg(&cpu->bus->ss, value);
+    i86_register_set_reg(&bus->ss, value);
 }
 
 /* API to get the value of the program counter. */
 uint16_t
-i86_cpu_get_reg_pc_ip(i86_cpu_t cpu)
+i86_cpu_get_reg_pc_ip(i86_bus_t bus)
 {
-    return i86_register_get_reg(&cpu->bus->ip);
+    return i86_register_get_reg(&bus->ip);
 }
 
 /* APIs to set the value of the segment registers. */
 uint16_t
-i86_cpu_get_reg_sr_cs(i86_cpu_t cpu)
+i86_cpu_get_reg_sr_cs(i86_bus_t bus)
 {
-    return i86_register_get_reg(&cpu->bus->cs);
+    return i86_register_get_reg(&bus->cs);
 }
 
 uint16_t
-i86_cpu_get_reg_sr_ds(i86_cpu_t cpu)
+i86_cpu_get_reg_sr_ds(i86_bus_t bus)
 {
-    return i86_register_get_reg(&cpu->bus->ds);
+    return i86_register_get_reg(&bus->ds);
 }
 
 uint16_t
-i86_cpu_get_reg_sr_es(i86_cpu_t cpu)
+i86_cpu_get_reg_sr_es(i86_bus_t bus)
 {
-    return i86_register_get_reg(&cpu->bus->es);
+    return i86_register_get_reg(&bus->es);
 }
 
 uint16_t
-i86_cpu_get_reg_sr_ss(i86_cpu_t cpu)
+i86_cpu_get_reg_sr_ss(i86_bus_t bus)
 {
-    return i86_register_get_reg(&cpu->bus->ss);
+    return i86_register_get_reg(&bus->ss);
 }

@@ -8,6 +8,9 @@
  *    Reference:
  */
 
+#include <stdio.h>
+#include <string.h>
+
 #include "i86_register.h"
 #include "i86_logger.h"
 
@@ -17,14 +20,14 @@
 
 /* API used to print the content of a given register. */
 void
-i86_cpu_print_register(void *id, i86_register16_t *reg)
+i86_register_print_register(void *id, i86_register16_t *reg)
 {
     char buff[I86_LOG_MSG_BUFF_LEN];
 
     memset(buff, 0x00, I86_LOG_MSG_BUFF_LEN);
     snprintf(buff,
              I86_LOG_MSG_BUFF_LEN,
-             "%s : 0x%.4x (l: 0x%.2, h: 0x%.2)\n",
+             "%s : 0x%.4x (l: 0x%.2x, h: 0x%.2x)\n",
              id,
              reg->reg.reg16,
              reg->reg.reg8.reg_l,

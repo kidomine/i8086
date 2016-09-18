@@ -21,24 +21,26 @@
 void
 i86_iset_aaa(i86_cpu_t cpu, i86_ope_t ope1, i86_ope_t ope2)
 {
-    uint8_t ah = i86_cpu_get_reg_mr_ax_ah(cpu);
-    uint8_t al = i86_cpu_get_reg_mr_ax_al(cpu);
-    uint8_t af = i86_cpu_get_reg_sf_af(cpu);
+    i86_alu_t alu = i86_cpu_get_alu(cpu);
+    i86_ceu_t ceu = i86_cpu_get_ceu(cpu);
+    uint8_t   ah  = i86_ceu_get_reg_mr_ax_ah(ceu);
+    uint8_t   al  = i86_ceu_get_reg_mr_ax_al(ceu);
+    uint8_t   af  = i86_alu_get_reg_sf_af(alu);
 
     if (((0x0f & al) > 9) || (af == 1))
     {
         al = al + 6;
-        i86_cpu_set_reg_mr_ax_ah(ah + 1);
+        i86_ceu_set_reg_mr_ax_ah(ceu, ah + 1);
 
-        i86_cpu_set_reg_sf_af(1);
-        i86_cpu_set_reg_sf_cf(1);
+        i86_alu_set_reg_sf_af(alu, 1);
+        i86_alu_set_reg_sf_cf(alu, 1);
     } else {
-        i86_cpu_set_reg_sf_af(0);
-        i86_cpu_set_reg_sf_cf(0);
+        i86_alu_set_reg_sf_af(alu, 0);
+        i86_alu_set_reg_sf_cf(alu, 0);
     }
 
     al = al & 0x0f;
-    i86_cpu_set_reg_mr_ax_al(al);
+    i86_ceu_set_reg_mr_ax_al(ceu, al);
 
     return;
 }
@@ -50,14 +52,15 @@ i86_iset_aaa(i86_cpu_t cpu, i86_ope_t ope1, i86_ope_t ope2)
 void
 i86_iset_aad(i86_cpu_t cpu, i86_ope_t ope1, i86_ope_t ope2)
 {
-    uint8_t ah = i86_cpu_get_reg_mr_ax_ah(cpu);
-    uint8_t al = i86_cpu_get_reg_mr_ax_al(cpu);
+    i86_ceu_t ceu = i86_cpu_get_ceu(cpu);
+    uint8_t   ah  = i86_ceu_get_reg_mr_ax_ah(ceu);
+    uint8_t   al  = i86_ceu_get_reg_mr_ax_al(ceu);
 
     al = (ah * 10) + al;
     ah = 0;
 
-    i86_cpu_set_reg_mr_ax_al(al);
-    i86_cpu_set_reg_mr_ax_ah(ah);
+    i86_ceu_set_reg_mr_ax_al(ceu, al);
+    i86_ceu_set_reg_mr_ax_ah(ceu, ah);
 
     return;
 }
@@ -69,14 +72,15 @@ i86_iset_aad(i86_cpu_t cpu, i86_ope_t ope1, i86_ope_t ope2)
 void
 i86_iset_aam(i86_cpu_t cpu, i86_ope_t ope1, i86_ope_t ope2)
 {
-    uint8_t ah = 0;
-    uint8_t al = i86_cpu_get_reg_mr_ax_al(cpu);
+    i86_ceu_t ceu = i86_cpu_get_ceu(cpu);
+    uint8_t   ah  = 0;
+    uint8_t   al  = i86_ceu_get_reg_mr_ax_al(ceu);
 
     ah = (al / 10);
     al = al - (ah * 10);
 
-    i86_cpu_set_reg_mr_ax_al(al);
-    i86_cpu_set_reg_mr_ax_ah(ah);
+    i86_ceu_set_reg_mr_ax_al(ceu, al);
+    i86_ceu_set_reg_mr_ax_ah(ceu, ah);
 
     return;
 }
@@ -88,24 +92,26 @@ i86_iset_aam(i86_cpu_t cpu, i86_ope_t ope1, i86_ope_t ope2)
 void
 i86_iset_aas(i86_cpu_t cpu, i86_ope_t ope1, i86_ope_t ope2)
 {
-    uint8_t ah = i86_cpu_get_reg_mr_ax_ah(cpu);
-    uint8_t al = i86_cpu_get_reg_mr_ax_al(cpu);
-    uint8_t af = i86_cpu_get_reg_sf_af(cpu);
+    i86_alu_t alu = i86_cpu_get_alu(cpu);
+    i86_ceu_t ceu = i86_cpu_get_ceu(cpu);
+    uint8_t   ah  = i86_ceu_get_reg_mr_ax_ah(ceu);
+    uint8_t   al  = i86_ceu_get_reg_mr_ax_al(ceu);
+    uint8_t   af  = i86_alu_get_reg_sf_af(alu);
 
     if (((0x0f & al) > 9) || (af == 1))
     {
         al = al - 6;
-        i86_cpu_set_reg_mr_ax_ah(ah - 1);
+        i86_ceu_set_reg_mr_ax_ah(ceu, ah - 1);
 
-        i86_cpu_set_reg_sf_af(1);
-        i86_cpu_set_reg_sf_cf(1);
+        i86_alu_set_reg_sf_af(alu, 1);
+        i86_alu_set_reg_sf_cf(alu, 1);
     } else {
-        i86_cpu_set_reg_sf_af(0);
-        i86_cpu_set_reg_sf_cf(0);
+        i86_alu_set_reg_sf_af(alu, 0);
+        i86_alu_set_reg_sf_cf(alu, 0);
     }
 
     al = al & 0x0f;
-    i86_cpu_set_reg_mr_ax_al(al);
+    i86_ceu_set_reg_mr_ax_al(ceu, al);
 
     return;
 }
@@ -116,11 +122,12 @@ i86_iset_aas(i86_cpu_t cpu, i86_ope_t ope1, i86_ope_t ope2)
 void
 i86_iset_adc(i86_cpu_t cpu, i86_ope_t ope1, i86_ope_t ope2)
 {
-    uint8_t   cf   = i86_cpu_get_reg_sf_cf(cpu);
-    uint16_t *ope1 = ope[0];
-    uint16_t *ope2 = ope[1];
+    i86_alu_t alu = i86_cpu_get_alu(cpu);
+    uint8_t   cf  = i86_alu_get_reg_sf_cf(alu);
+    //uint16_t *ope1 = ope[0];
+    //uint16_t *ope2 = ope[1];
 
-    *ope1 = *ope1 + *ope2 + cf;
+    //*ope1 = *ope1 + *ope2 + cf;
 
     return;
 }
@@ -131,10 +138,10 @@ i86_iset_adc(i86_cpu_t cpu, i86_ope_t ope1, i86_ope_t ope2)
 void
 i86_iset_add(i86_cpu_t cpu, i86_ope_t ope1, i86_ope_t ope2)
 {
-    uint16_t *ope1 = ope[0];
-    uint16_t *ope2 = ope[1];
+    //uint16_t *ope1 = ope[0];
+    //uint16_t *ope2 = ope[1];
 
-    *ope1 = *ope1 + *ope2;
+    //*ope1 = *ope1 + *ope2;
 
     return;
 }
@@ -147,10 +154,10 @@ i86_iset_add(i86_cpu_t cpu, i86_ope_t ope1, i86_ope_t ope2)
 void
 i86_iset_and(i86_cpu_t cpu, i86_ope_t ope1, i86_ope_t ope2)
 {
-    uint16_t *ope1 = ope[0];
-    uint16_t *ope2 = ope[1];
+    //uint16_t *ope1 = ope[0];
+    //uint16_t *ope2 = ope[1];
 
-    *ope1 = *ope1 & *ope2;
+    //*ope1 = *ope1 & *ope2;
 
     return;
 }
