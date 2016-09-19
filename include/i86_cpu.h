@@ -16,6 +16,7 @@
 #include "i86_alu.h"
 #include "i86_bus.h"
 #include "i86_ceu.h"
+#include "i86_clock.h"
 
 /* Execution modes. */
 typedef enum _i86_mode_e{
@@ -31,7 +32,7 @@ typedef struct _i86_cpu_t *i86_cpu_t;
 
 /* CPU constructor/destructor */
 extern i86_cpu_t  i86_cpu_create(void);
-extern void       i86_cpu_destroy(i86_cpu_t cpu);
+extern void       i86_cpu_destroy(i86_cpu_t *cpu);
 extern void       i86_cpu_print_info(i86_cpu_t cpu);
 extern void       i86_cpu_set_mode(i86_cpu_t cpu, i86_mode_e mode);
 extern i86_mode_e i86_cpu_get_mode(i86_cpu_t cpu);

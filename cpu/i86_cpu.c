@@ -18,9 +18,10 @@ typedef struct _i86_cpu_t
 {
     i86_mode_e mode;
 
-    i86_ceu_t ceu;
-    i86_alu_t alu;
-    i86_bus_t bus;
+    i86_ceu_t   ceu;
+    i86_alu_t   alu;
+    i86_bus_t   bus;
+    i86_clock_t clk;
 };
 
 
@@ -44,21 +45,25 @@ i86_cpu_create(void)
                 cpu->ceu = i86_ceu_create();
                 if (cpu->ceu != NULL)
                 {
-                    cpu->mode = i86_mode_real;
+                    cpu->clk = i86_clk_create();
+                    if (cpu->clk != NULL)
+                    {
+                        cpu->mode = i86_mode_real;
+                    } else {
+                        i86_logger("failed to create CLK instance!");
+                        i86_cpu_destroy(&cpu);
+                    }
                 } else {
                     i86_logger("failed to create a CEU instance!");
-                    i86_bus_destroy(&cpu->bus);
-                    i86_alu_destroy(&cpu->alu);
-                    free(cpu);
+                    i86_cpu_destroy(&cpu);
                 }
             } else {
                 i86_logger("failed to create a BUS instance!");
-                i86_alu_destroy(&cpu->alu);
-                free(cpu);
+                i86_cpu_destroy(&cpu);
             }
         } else {
             i86_logger("failed to create an ALU instance!");
-            free(cpu);
+            i86_cpu_destroy(&cpu);
         }
     } else {
         i86_logger("failed to create a CPU instance!");
@@ -68,16 +73,38 @@ i86_cpu_create(void)
 }
 
 void
-i86_cpu_destroy(i86_cpu_t cpu)
+i86_cpu_destroy(i86_cpu_t *cpu)
 {
+    i86_cpu_t _cpu = NULL;
+
     if (cpu == NULL)
     {
         i86_logger("no CPU instance specified!");
     } else {
-        i86_alu_destroy(&cpu->alu);
-        i86_bus_destroy(&cpu->bus);
-        i86_ceu_destroy(&cpu->ceu);
-        free(cpu);
+        _cpu = *cpu;
+
+        if (_cpu->alu != NULL)
+        {
+            i86_alu_destroy(&_cpu->alu);
+        }
+
+        if (_cpu->bus != NULL)
+        {
+            i86_bus_destroy(&_cpu->bus);
+        }
+
+        if (_cpu->ceu != NULL)
+        {
+            i86_ceu_destroy(&_cpu->ceu);
+        }
+
+        if (_cpu->clk != NULL)
+        {
+            i86_clk_destroy(&_cpu->clk);
+        }
+
+        free(_cpu);
+        *cpu = NULL;
     }
 }
 
@@ -124,6 +151,21 @@ i86_cpu_get_ceu(i86_cpu_t cpu)
     }
 
     return ceu;
+}
+
+i86_clock_t
+i86_cpu_get_clock(i86_cpu_t cpu)
+{
+    i86_clock_t clk = NULL;
+
+    if (cpu == NULL)
+    {
+        i86_logger("no CPU instance specified!");
+    } else {
+        clk = cpu->clk;
+    }
+
+    return clk;
 }
 
 void

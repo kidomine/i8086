@@ -72,7 +72,7 @@ clean:
 	$(RM) $(RMOPTS) $(APP)
 	$(RM) $(RMOPTS) $(TST)
 	
-	@echo "Cleanin miscellaneous files..."
+	@echo "Cleaning miscellaneous files..."
 	$(RM) $(RMOPTS) *.xml
 
 .PHONY: all test clean

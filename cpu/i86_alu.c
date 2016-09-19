@@ -27,6 +27,12 @@ i86_alu_create(void)
     i86_alu_t alu = NULL;
 
     alu = (struct _i86_alu_t *)malloc(sizeof(struct _i86_alu_t));
+    if(alu != NULL)
+    {
+        i86_logger("successfully allocated memory for ALU instance!");
+    } else {
+        i86_logger("failed to allocate memory for ALU instance!");
+    }
 
     return alu;
 }
